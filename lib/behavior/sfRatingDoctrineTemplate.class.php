@@ -11,7 +11,7 @@
  * Responsible for handling Doctrine's behaviors.
  * @package    sfLucenePlugin
  * @subpackage Behavior
- * @author     Carl Vondrick <carlv@carlsoft.net>
+ * @author     Gordon Franke
  */
 class sfRatingDoctrineTemplate extends Doctrine_Template
 {
@@ -28,15 +28,15 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   /**
    * Counts ratings made on given ratable object.
    * 
-   * @param  BaseObject  $object
    * @return int
    */
-  public function countRatings($object)
+  public function countRatings()
   {
-    $c = new Criteria();
-    $c->add(sfRatingPeer::RATABLE_ID, sfRatingToolkit::getReferenceKey($object));
-    $c->add(sfRatingPeer::RATABLE_MODEL, get_class($object));
-    return sfRatingPeer::doCount($c);
+    $object = $this->getInvoker();
+  	return Doctrine_Query::create()
+      ->from('sfRating')
+      ->where('ratable_id = ? AND ratable_model = ?')
+      ->count(array(sfRatingToolkit::getReferenceKey($object), get_class($object)));
   }
 
   /**
@@ -70,7 +70,6 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   /**
    * Gets the object rating details
    *
-   * @author Gordon Franke
    * @param  boolean     $include_all  Shall we include all available ratings?
    * @return associative array containing (rating => count)
    **/
