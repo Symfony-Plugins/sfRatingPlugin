@@ -1,0 +1,24 @@
+sfRating:
+  tableName: sf_rating
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    ratable_model:
+      type: varchar(50)
+      notnull: true
+    ratable_id:
+      type: integer
+      notnull: true
+    user_id:
+      type: integer
+    rating:
+      type: integer
+      notnull: true
+      default: 1
+  indexes:
+    ratable_index:
+      fields: [ratable_model, ratable_id]
+    ratable_uindex:
+      fields: [ratable_model, ratable_id, user_id]  
