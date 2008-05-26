@@ -2,7 +2,7 @@
 require_once('init.php');
 
 // start tests
-$t = new lime_test(21, new lime_output_color());
+$t = new lime_test(25, new lime_output_color());
 
 
 $t->diag('create test objects');
@@ -137,15 +137,15 @@ $obj1->clearRatings();
 $obj2->clearRatings();
 sfConfig::set(
     sprintf('propel_behavior_sfPropelActAsRatableBehavior_%s_max_rating', 
-            get_class($obj1)), 12);
+            get_class($obj1)), 10);
 
-$obj1->setRating(6, $user_1_id);
+$obj1->setRating(4, $user_1_id);
 $obj1->setRating(6, $user_2_id);
+$t->is($obj1->getRating(), 5, 'getRating() base12 ok');
+$obj1->setRating(8, $user_2_id);
 $t->is($obj1->getRating(), 6, 'getRating() base12 ok');
-$obj1->setRating(12, $user_2_id);
-$t->is($obj1->getRating(), 9, 'getRating() base12 ok');
-$obj1->setRating(3, $user_1_id);
-$t->is($obj1->getRating(), 7.5, 'getRating() base12 ok');
+$obj1->setRating(2, $user_1_id);
+$t->is($obj1->getRating(), 5, 'getRating() base12 ok');
 
 // Testing ratings details retrieval
 $obj1->setRating(6, $user_1_id);
@@ -156,17 +156,14 @@ $t->is(count($details), 2, 'getRatingDetails() count ok');
 $t->is_deeply($details, array(6 => 2, 7 => 1), 'getRatingDetails() results are conform');
 
 $full_details = $obj1->getRatingDetails(true);
-$t->is(count($full_details), 12, 'getRatingDetails(true) count ok');
-$expected = array(0=>0, 1=>0, 2=>0, 3=>0, 4=>0, 5=>0, 6=>2, 7=>1, 8=>0, 9=>0, 10=>0, 11=>0, 12=>0);
+$t->is(count($full_details), 10, 'getRatingDetails(true) count ok');
+$expected = array(1=>0, 2=>0, 3=>0, 4=>0, 5=>0, 6=>2, 7=>1, 8=>0, 9=>0, 10=>0);
 $t->is_deeply($full_details, $expected, 'getRatingDetails(true) results are conform');
 
 // Testing cascade deletion
-$obj1_key = $obj1->getPrimaryKey();
 $obj1->delete();
-$c = new Criteria();
-$c->add(sfRatingPeer::RATABLE_ID, $obj1_key);
-$count = sfRatingPeer::doCount($c);
-$t->is($count, 0, 'doCount() No more rating records for deleted object');
+
+$t->is($obj1->getRating(), 0, 'doCount() No more rating records for deleted object');
 
 // Delete remaining object
 $obj2->delete();

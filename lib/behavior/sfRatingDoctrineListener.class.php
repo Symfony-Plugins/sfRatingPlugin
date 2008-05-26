@@ -16,6 +16,16 @@
 class sfRatingDoctrineListener extends Doctrine_Record_Listener
 {
   /**
+   * Deletes all rating for a ratable object (delete cascade emulation)
+   * 
+   * @param  Doctrine_Event  $event
+   */
+  public function preDelete(Doctrine_Event $event)
+  {
+    $event->getInvoker()->clearRatings();
+  }  
+
+  /**
    * Retrieve a ratable object
    * 
    * @param  string  $object_model
