@@ -125,11 +125,11 @@ $t->is($obj1->getRating(), 5, 'getRating() rating retrieval OK');
 $t->is($obj1->getUserRating($user_1_id), $u1_rating, 'getUserRating() user rating retrieval OK');
 
 # User 1 cancel his rating
-$t->ok($obj1->clearUserRating($user_2_id), 'cleanUserRating() User 2 cleans his rating');
+$t->is($obj1->clearUserRating($user_2_id), 1, 'cleanUserRating() User 2 cleans his rating');
 $t->ok(!$obj1->hasBeenRatedByUser($user_2_id), 'hasBeenRatedByUser() Object has now not been rated by user 2');
 $t->is($obj1->getRating(), $u1_rating, 'getRating() Object rating has been updated');
 
-$t->ok($obj1->clearRatings(), 'cleanRatings() All ratings are cleared');
+$t->is($obj1->clearRatings(), 1, 'cleanRatings() All ratings are cleared');
 $t->is($obj1->getRating(), NULL, 'getRating() Rating is now NULL for this object');
 
 // Rating based on a 12 max rating

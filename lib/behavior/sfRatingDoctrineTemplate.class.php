@@ -33,6 +33,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   public function countRatings()
   {
     $object = $this->getInvoker();
+
   	return Doctrine_Query::create()
       ->from('sfRating')
       ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
@@ -49,11 +50,37 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   {
     $object = $this->getInvoker();
     self::setRatingToObject($object, 0);
+
     return Doctrine_Query::create()
       ->delete()
       ->from('sfRating')
       ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
       ->addWhere('ratable_model = ?', get_class($object))
+      ->execute();
+  }
+
+  /**
+   * Clear user rating for an object
+   *
+   * @param  mixed       $user_id  User primary key
+   * @return int affected rows
+   **/
+  public function clearUserRating($user_id)
+  {
+    $object = $this->getInvoker();
+  	if (is_null($user_id) or trim((string)$user_id) === '')
+    {
+      throw new sfRatingException('Impossible to clear a user rating with no user primary key provided');
+    }
+
+    self::setRatingToObject($object, $this->getRating($object, sfRatingToolkit::getPrecision(), true));
+
+    return Doctrine_Query::create()
+      ->delete()
+      ->from('sfRating')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
+      ->addWhere('user_id = ?', $user_id)
       ->execute();
   }
 
@@ -65,6 +92,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   public function hasBeenRated()
   {
     $object = $this->getInvoker();
+
   	return false !== Doctrine_Query::create()
   	  ->select('id')
       ->from('sfRating')
@@ -88,6 +116,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
       throw new sfRatingException(
         'Impossible to check a user rating with no user primary key provided');
     }
+
   	return false !== Doctrine_Query::create()
   	  ->select('id')
   	  ->from('sfRating')
@@ -123,6 +152,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     {
       return NULL; // Object has not been rated yet
     }
+
     return round($rating['total'] / $rating['nb_ratings'], sfRatingToolkit::getPrecision($precision));
   }
 
@@ -226,6 +256,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     $rating_object->setRating($rating);
     $rating_object->save();
     self::setRatingToObject($object, $this->getRating(sfRatingToolkit::getPrecision(), true));
+
     return $rating_object;
   }
 
@@ -274,6 +305,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
       if (method_exists($object, $setter))
       {
         $ret = $object->$setter($value);
+
         return $object->save();
       }
     }
@@ -296,6 +328,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
         return $object->$getter();
       }
     }
+
     return null;
   }
 }
