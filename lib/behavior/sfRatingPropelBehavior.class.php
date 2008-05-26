@@ -237,6 +237,7 @@ class sfRatingPropelBehavior
     {
       return $rating_object->getRating();
     }
+    return false;
   }
   
   /**

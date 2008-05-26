@@ -77,7 +77,6 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
       ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
       ->addWhere('ratable_model = ?', get_class($object))
       ->addWhere('user_id = ?', $user_id)
-      ->limit(1)
       ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
   }
 
@@ -147,6 +146,31 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
 
     return $details;
   }
+
+  /**
+   * Gets the object rating for given user pk
+   *
+   * @param  mixed       $user_id  User primary key
+   * @return int or false
+   **/
+  public function getUserRating($user_id)
+  {
+    $object = $this->getInvoker();
+  	if (is_null($user_id) or trim((string)$user_id) === '')
+    {
+      throw new sfRatingException(
+        'Impossible to get a user rating with no user primary key provided');
+    }
+
+  	$rating_object = Doctrine_Query::create()
+  	  ->from('sfRating')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
+      ->addWhere('user_id = ?', $user_id)
+      ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
+
+    return $rating_object ? $rating_object['rating']:false;
+  }  
 
   /**
    * Rates the Object
