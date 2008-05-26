@@ -35,8 +35,9 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     $object = $this->getInvoker();
   	return Doctrine_Query::create()
       ->from('sfRating')
-      ->where('ratable_id = ? AND ratable_model = ?')
-      ->count(array(sfRatingToolkit::getReferenceKey($object), get_class($object)));
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
+      ->count();
   }
 
   /**
@@ -50,9 +51,10 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   	return false !== Doctrine_Query::create()
   	  ->select('id')
       ->from('sfRating')
-      ->where('ratable_id = ? AND ratable_model = ?')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
       ->limit(1)
-      ->fetchOne(array(sfRatingToolkit::getReferenceKey($object), get_class($object)));
+      ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
   }
 
   /**
@@ -72,9 +74,11 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   	return false !== Doctrine_Query::create()
   	  ->select('id')
   	  ->from('sfRating')
-      ->where('ratable_id = ? AND ratable_model = ? AND user_id = ?')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
+      ->addWhere('user_id = ?', $user_id)
       ->limit(1)
-      ->fetchOne(array(sfRatingToolkit::getReferenceKey($object), get_class($object), $user_id));
+      ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
   }
 
   /**
@@ -94,9 +98,10 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     $rating = Doctrine_Query::create()
       ->select('COUNT(id) as nb_ratings, SUM(rating) as total')
       ->from('sfRating')
-      ->where('ratable_id = ? AND ratable_model = ?')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
       ->groupby('ratable_model')
-      ->fetchOne(array(sfRatingToolkit::getReferenceKey($object), get_class($object)));
+      ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
 
     if(!$rating)
     {
@@ -117,9 +122,10 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   	$ratings = Doctrine_Query::create()
       ->select('COUNT(id) as nb_ratings, rating')
       ->from('sfRating')
-      ->where('ratable_id = ? AND ratable_model = ?')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
       ->groupby('rating')
-      ->execute(array(sfRatingToolkit::getReferenceKey($object), get_class($object)), Doctrine::HYDRATE_ARRAY);
+      ->execute(array(), Doctrine::HYDRATE_ARRAY);
 
     $details = array();
     foreach($ratings as $rating)
@@ -177,9 +183,9 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     $rating_object->setRatableId(sfRatingToolkit::getReferenceKey($object));
     $rating_object->setUserId($user_id);
     $rating_object->setRating($rating);
-    $ret = $rating_object->save();
+    $rating_object->save();
     self::setRatingToObject($object, $this->getRating(sfRatingToolkit::getPrecision(), true));
-    return $ret;
+    return $rating_object;
   }
 
   /**
@@ -205,11 +211,11 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     $user_rating = Doctrine_Query::create()
       ->from('sfRating')
       ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
-      ->add('ratable_model = ?', get_class($object))
-      ->add('user_id = ?', $user_id)
+      ->addWhere('ratable_model = ?', get_class($object))
+      ->addWhere('user_id = ?', $user_id)
       ->fetchOne();
 
-    return is_null($user_rating) ? new sfRating() : $user_rating;
+    return $user_rating ? $user_rating:new sfRating();
   }
 
   /**
