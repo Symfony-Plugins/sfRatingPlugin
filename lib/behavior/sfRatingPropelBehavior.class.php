@@ -110,7 +110,10 @@ class sfRatingPropelBehavior
     $c = new Criteria();
     $c->add(sfRatingPeer::RATABLE_ID, sfRatingToolkit::getReferenceKey($object));
     $c->add(sfRatingPeer::RATABLE_MODEL, get_class($object));
-    return sfRatingPeer::doCount($c) > 0;
+    $c->clearSelectColumns();
+    $c->addSelectColumn(sfRatingPeer::ID);
+    $c->setLimit(1);
+    return sfRatingPeer::doSelectRS($c)->getRecordCount() > 0;
   }
 
   /**
@@ -130,7 +133,10 @@ class sfRatingPropelBehavior
     $c->add(sfRatingPeer::RATABLE_ID, sfRatingToolkit::getReferenceKey($object));
     $c->add(sfRatingPeer::RATABLE_MODEL, get_class($object));
     $c->add(sfRatingPeer::USER_ID, $user_id);
-    return (sfRatingPeer::doCount($c) > 0);
+    $c->clearSelectColumns();
+    $c->addSelectColumn(sfRatingPeer::ID);
+    $c->setLimit(1);
+    return sfRatingPeer::doSelectRS($c)->getRecordCount() > 0;
   }
 
   /**
