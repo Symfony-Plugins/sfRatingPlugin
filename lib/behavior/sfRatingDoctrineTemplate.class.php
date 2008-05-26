@@ -41,6 +41,23 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   }
 
   /**
+   * Clear all ratings for an object
+   *
+   * @return int affected rows
+   **/
+  public function clearRatings()
+  {
+    $object = $this->getInvoker();
+    self::setRatingToObject($object, 0);
+    return Doctrine_Query::create()
+      ->delete()
+      ->from('sfRating')
+      ->addWhere('ratable_id = ?', sfRatingToolkit::getReferenceKey($object))
+      ->addWhere('ratable_model = ?', get_class($object))
+      ->execute();
+  }
+
+  /**
    * Checks if an Object has been rated
    *
    * @return  boolean

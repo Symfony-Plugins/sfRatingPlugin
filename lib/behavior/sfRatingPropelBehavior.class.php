@@ -67,15 +67,15 @@ class sfRatingPropelBehavior
    * Clear all ratings for an object
    *
    * @param  BaseObject  $object
+   * @return int affected rows
    **/
   public function clearRatings(BaseObject $object)
   {
-    $c = new Criteria();
+    self::setRatingToObject($object, 0);
+  	$c = new Criteria();
     $c->add(sfRatingPeer::RATABLE_ID, sfRatingToolkit::getReferenceKey($object));
     $c->add(sfRatingPeer::RATABLE_MODEL, get_class($object));
-    $ret = sfRatingPeer::doDelete($c);
-    self::setRatingToObject($object, 0);
-    return $ret;
+    return sfRatingPeer::doDelete($c);
   }
 
   /**

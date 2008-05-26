@@ -1,53 +1,33 @@
 <?php
-$sf_root_dir = realpath(dirname(__FILE__).'/../../../../');
-$apps_dir = glob($sf_root_dir.'/apps/*', GLOB_ONLYDIR);
-$app = substr($apps_dir[0], 
-              strrpos($apps_dir[0], DIRECTORY_SEPARATOR) + 1, 
-              strlen($apps_dir[0]));
-if (!$app)
-{
-  throw new Exception('No app has been detected in this project');
-}
-
-// Symfony test env bootstrap
-require_once($sf_root_dir.'/test/bootstrap/functional.php');
-
-$sf_symfony_lib_dir = sfConfig::get('sf_symfony_lib_dir');
-require_once ($sf_symfony_lib_dir . '/util/sfCore.class.php');
-
-sfCore::initSimpleAutoload(array(SF_ROOT_DIR . '/lib', SF_ROOT_DIR . '/plugins', $sf_symfony_lib_dir));
-
-// initialize the db connections
-sfContext::getInstance()->getDatabaseManager()->initialize();
+require_once('init.php');
 
 // start tests
-$t = new lime_test(20, new lime_output_color());
+$t = new lime_test(21, new lime_output_color());
 
-$object_name = 'tblSCCite';
 
 $t->diag('check getMaxRating()');
 
 // default
-$t->is(sfRatingToolkit::getMaxRating(new $object_name), 5, 'retrieve correct default value');
+$t->is(sfRatingToolkit::getMaxRating(new $test_class), 5, 'retrieve correct default value');
 
 sfConfig::set('app_rating_default_max', 8);
-$t->is(sfRatingToolkit::getMaxRating(new $object_name), 8, 'retrieve correct default value, even when set');
+$t->is(sfRatingToolkit::getMaxRating(new $test_class), 8, 'retrieve correct default value, even when set');
 
 sfConfig::set('app_rating_default_max', "8");
-$t->isa_ok(sfRatingToolkit::getMaxRating(new $object_name), 'integer', 'MAX_RATING is an integer');
+$t->isa_ok(sfRatingToolkit::getMaxRating(new $test_class), 'integer', 'MAX_RATING is an integer');
 
 // get
-sfConfig::set('app_rating_max_'.$object_name, 5);
-$t->is(sfRatingToolkit::getMaxRating(new $object_name), 5, 'retrieve correct value');
+sfConfig::set('app_rating_max_'.$test_class, 5);
+$t->is(sfRatingToolkit::getMaxRating(new $test_class), 5, 'retrieve correct value');
 
-sfConfig::set('app_rating_max_'.$object_name, 10);
-$t->is(sfRatingToolkit::getMaxRating(new $object_name), 10, 'retrieve correct value, even when changed');
+sfConfig::set('app_rating_max_'.$test_class, 10);
+$t->is(sfRatingToolkit::getMaxRating(new $test_class), 10, 'retrieve correct value, even when changed');
 
 // interval
 try
 {
-  sfConfig::set('app_rating_max_'.$object_name, 11);
-  sfRatingToolkit::getMaxRating(new $object_name);
+  sfConfig::set('app_rating_max_'.$test_class, 11);
+  sfRatingToolkit::getMaxRating(new $test_class);
 
   $t->fail('no code should be executed after throwing an sfRatingException');
 }
@@ -58,8 +38,8 @@ catch (sfRatingException $e)
 
 try
 {
-  sfConfig::set('app_rating_max_'.$object_name, 0);
-  sfRatingToolkit::getMaxRating(new $object_name);
+  sfConfig::set('app_rating_max_'.$test_class, 0);
+  sfRatingToolkit::getMaxRating(new $test_class);
 
   $t->fail('no code should be executed after throwing an sfRatingException');
 }
@@ -68,17 +48,22 @@ catch (sfRatingException $e)
   $t->pass('throw exception when less than 1');
 }
 
+
 $t->todo('check getUserId()');
+
+$t->is(sfRatingToolkit::getUserId(), null, 'no auth');
+
+
 $t->todo('check addTokenToSession()');
 
 
 $t->diag('check generateToken()');
 
-$t->is(sfRatingToolkit::generateToken($object_name, 23), md5($object_name.'-23-r4t4bl3'), 'without config salt');
+$t->is(sfRatingToolkit::generateToken($test_class, 23), md5($test_class.'-23-r4t4bl3'), 'without config salt');
 
 $salt = '3kbt2';
 sfConfig::set('app_rating_salt', $salt);
-$t->is(sfRatingToolkit::generateToken($object_name, 54), md5($object_name.'-54-'.$salt), 'with config salt');
+$t->is(sfRatingToolkit::generateToken($test_class, 54), md5($test_class.'-54-'.$salt), 'with config salt');
 
 
 $t->todo('check retrieveFromToken()');

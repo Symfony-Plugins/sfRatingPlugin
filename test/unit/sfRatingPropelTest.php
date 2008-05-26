@@ -136,6 +136,7 @@ $t->is($obj->getRating(), $u1_rating, 'getRating() rating retrieval OK');
 $t->is($obj->getUserRating($user_1_id), $u1_rating, 'getUserRating() user rating retrieval OK');
 
 # User 2 rate object 1
+$t->cmp_ok($obj->getUserRating($user_2_id), '===', false, 'getUserRating() user has not been rated');
 $u2_rating = 5;
 $t->ok($obj->setRating($u2_rating, $user_2_id), 'setRating() Object rated by user 2 to '.$u2_rating);
 $t->ok($obj->hasBeenRated(), 'hasBeenRated() Object has been rated');
