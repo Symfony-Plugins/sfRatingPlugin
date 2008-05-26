@@ -48,6 +48,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   {
     $object = $this->getInvoker();
   	return false !== Doctrine_Query::create()
+  	  ->select('id')
       ->from('sfRating')
       ->where('ratable_id = ? AND ratable_model = ?')
       ->limit(1)
@@ -69,7 +70,8 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
         'Impossible to check a user rating with no user primary key provided');
     }
   	return false !== Doctrine_Query::create()
-      ->from('sfRating')
+  	  ->select('id')
+  	  ->from('sfRating')
       ->where('ratable_id = ? AND ratable_model = ? AND user_id = ?')
       ->limit(1)
       ->fetchOne(array(sfRatingToolkit::getReferenceKey($object), get_class($object), $user_id));
