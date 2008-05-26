@@ -40,6 +40,42 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   }
 
   /**
+   * Checks if an Object has been rated
+   *
+   * @return  boolean
+   **/
+  public function hasBeenRated()
+  {
+    $object = $this->getInvoker();
+  	return false !== Doctrine_Query::create()
+      ->from('sfRating')
+      ->where('ratable_id = ? AND ratable_model = ?')
+      ->limit(1)
+      ->fetchOne(array(sfRatingToolkit::getReferenceKey($object), get_class($object)));
+  }
+
+  /**
+   * Checks if an Object has been rated by a user
+   *
+   * @param  mixed       $user_id  Unique reference to a user
+   * @return  boolean
+   **/
+  public function hasBeenRatedByUser($user_id)
+  {
+    $object = $this->getInvoker();
+  	if (is_null($user_id) or trim((string)$user_id) === '')
+    {
+      throw new sfRatingException(
+        'Impossible to check a user rating with no user primary key provided');
+    }
+  	return false !== Doctrine_Query::create()
+      ->from('sfRating')
+      ->where('ratable_id = ? AND ratable_model = ? AND user_id = ?')
+      ->limit(1)
+      ->fetchOne(array(sfRatingToolkit::getReferenceKey($object), get_class($object), $user_id));
+  }
+
+  /**
    * Retrieves the object rating
    *
    * @param  int         $precision   Result float precision
