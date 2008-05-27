@@ -2,7 +2,7 @@
 require_once('init.php');
 
 // start tests
-$t = new lime_test(21, new lime_output_color());
+$t = new lime_test(28, new lime_output_color());
 
 
 $t->diag('check getMaxRating()');
@@ -67,8 +67,35 @@ $t->is(sfRatingToolkit::generateToken($test_class, 54), md5($test_class.'-54-'.$
 
 
 $t->todo('check retrieveFromToken()');
-$t->todo('check getObjectRatingField()');
-$t->todo('check getObjectReferenceField()');
+
+
+$t->diag('check getObjectRatingField()');
+
+$t->ok(is_null(sfRatingToolkit::getObjectRatingField(new $test_class)), 'get null if no field is set');
+
+$field = 'rating';
+sfConfig::set(sprintf('app_rating_%s_rating_field', $test_class), $field);
+$t->is(sfRatingToolkit::getObjectRatingField(new $test_class), $field, 'retrieve correct value');
+
+sfConfig::clear();
+$t->ok(is_null(sfRatingToolkit::getObjectRatingField(new $test_class)), 'get null if no field is set for this class');
+
+
+$t->diag('check getObjectReferenceField()');
+
+$t->ok(is_null(sfRatingToolkit::getObjectReferenceField($test_class)), 'get null if no field is set for class name');
+$t->ok(is_null(sfRatingToolkit::getObjectReferenceField(new $test_class)), 'get null if no field is set for object');
+
+$field = 'rating';
+sfConfig::set(sprintf('app_rating_%s_reference_field', $test_class), $field);
+$t->is(sfRatingToolkit::getObjectReferenceField($test_class), $field, 'retrieve correct value for class name');
+$t->is(sfRatingToolkit::getObjectReferenceField(new $test_class), $field, 'retrieve correct value for object');
+
+sfConfig::clear();
+$t->ok(is_null(sfRatingToolkit::getObjectReferenceField($test_class)), 'get null if no field is set for this class name');
+$t->ok(is_null(sfRatingToolkit::getObjectReferenceField(new $test_class)), 'get null if no field is set for this object');
+
+
 $t->todo('check getReferenceKey()');
 
 
