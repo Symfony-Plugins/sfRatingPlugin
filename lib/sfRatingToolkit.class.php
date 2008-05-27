@@ -164,7 +164,12 @@ class sfRatingToolkit
    */
   public static function getObjectRatingField($object)
   {
-    return sfConfig::get(sprintf('app_rating_%s_rating_field', get_class($object)));
+    $class_config = sfConfig::get('app_rating_' . get_class($object));
+//TODO: add test when ratingField is set Fatal error: Call to undefined method sfRatingToolkit::getratingtoobject() in
+//    var_dump('app_rating_%s' . get_class($object));
+//    var_dump($class_config);
+//    return isset($class_config['ratingField']) ? $class_config['ratingField']:null;
+    return null;
   }
 
   /**
@@ -180,7 +185,11 @@ class sfRatingToolkit
       $object_name = get_class($object_name);
   	}
 
-  	return sfConfig::get(sprintf('app_rating_%s_reference_field', $object_name));
+  	$class_config = sfConfig::get('app_rating_' . $object_name);
+//TODO: add test when referenceField is set
+//    var_dump('app_rating_%s' . $object_name);
+//    var_dump($class_config);
+  	return isset($class_config['referenceField']) ? $class_config['referenceField']:null;
   }
   
   /**

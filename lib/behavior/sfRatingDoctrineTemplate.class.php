@@ -299,6 +299,8 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
   protected static function setRatingToObject($object, $value)
   {
     $field = sfRatingToolkit::getObjectRatingField($object);
+//TODO: add test
+//    var_dump($field);
     if (!is_null($field)) 
     {
       $setter = 'set'.$field;

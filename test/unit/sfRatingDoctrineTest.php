@@ -135,9 +135,7 @@ $t->is($obj1->getRating(), NULL, 'getRating() Rating is now NULL for this object
 // Rating based on a 12 max rating
 $obj1->clearRatings();
 $obj2->clearRatings();
-sfConfig::set(
-    sprintf('propel_behavior_sfPropelActAsRatableBehavior_%s_max_rating', 
-            get_class($obj1)), 10);
+sfConfig::set(sprintf('app_rating_%s_max', get_class($obj1)), 10);
 
 $obj1->setRating(4, $user_1_id);
 $obj1->setRating(6, $user_2_id);
