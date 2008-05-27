@@ -17,16 +17,16 @@ sfConfig::set('app_rating_default_max', "8");
 $t->isa_ok(sfRatingToolkit::getMaxRating(new $test_class), 'integer', 'MAX_RATING is an integer');
 
 // get
-sfConfig::set('app_rating_max_'.$test_class, 5);
+sfConfig::set(sprintf('app_rating_%s_max', $test_class), 5);
 $t->is(sfRatingToolkit::getMaxRating(new $test_class), 5, 'retrieve correct value');
 
-sfConfig::set('app_rating_max_'.$test_class, 10);
+sfConfig::set(sprintf('app_rating_%s_max', $test_class), 10);
 $t->is(sfRatingToolkit::getMaxRating(new $test_class), 10, 'retrieve correct value, even when changed');
 
 // interval
 try
 {
-  sfConfig::set('app_rating_max_'.$test_class, 11);
+  sfConfig::set(sprintf('app_rating_%s_max', $test_class), 11);
   sfRatingToolkit::getMaxRating(new $test_class);
 
   $t->fail('no code should be executed after throwing an sfRatingException');
@@ -38,7 +38,7 @@ catch (sfRatingException $e)
 
 try
 {
-  sfConfig::set('app_rating_max_'.$test_class, 0);
+  sfConfig::set(sprintf('app_rating_%s_max', $test_class), 0);
   sfRatingToolkit::getMaxRating(new $test_class);
 
   $t->fail('no code should be executed after throwing an sfRatingException');

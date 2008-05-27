@@ -38,7 +38,7 @@ class sfRatingToolkit
    */
   public static function getMaxRating($object)
   {
-    $max_rating = sfConfig::get('app_rating_max_' . get_class($object));
+    $max_rating = sfConfig::get(sprintf('app_rating_%s_max', get_class($object)));
 
     if (is_null($max_rating))
     {
@@ -164,9 +164,7 @@ class sfRatingToolkit
    */
   public static function getObjectRatingField($object)
   {
-    return sfConfig::get(
-      sprintf('propel_behavior_sfPropelActAsRatableBehavior_%s_rating_field', 
-              get_class($object)));
+    return sfConfig::get(sprintf('app_rating_%s_rating_field', get_class($object)));
   }
 
   /**
@@ -182,9 +180,7 @@ class sfRatingToolkit
       $object_name = get_class($object_name);
   	}
 
-  	return sfConfig::get(
-      sprintf('propel_behavior_sfPropelActAsRatableBehavior_%s_reference_field', 
-              $object_name));
+  	return sfConfig::get(sprintf('app_rating_%s_reference_field', $object_name));
   }
   
   /**

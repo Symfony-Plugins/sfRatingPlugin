@@ -73,7 +73,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
       throw new sfRatingException('Impossible to clear a user rating with no user primary key provided');
     }
 
-    self::setRatingToObject($object, $this->getRating($object, sfRatingToolkit::getPrecision(), true));
+    self::setRatingToObject($object, $this->getRating(sfRatingToolkit::getPrecision(), true));
 
     return Doctrine_Query::create()
       ->delete()
