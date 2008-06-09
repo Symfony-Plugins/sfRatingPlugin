@@ -137,7 +137,7 @@ class sfRatingDoctrineTemplate extends Doctrine_Template
     $object = $this->getInvoker();
     if ($docount === false && !is_null(sfRatingToolkit::getObjectRatingField($object)))
     {
-      return round(sfRatingToolkit::getRatingToObject($object), sfRatingToolkit::getPrecision());
+      return round(self::getRatingToObject($object), sfRatingToolkit::getPrecision());
     }
 
     $rating = Doctrine_Query::create()
