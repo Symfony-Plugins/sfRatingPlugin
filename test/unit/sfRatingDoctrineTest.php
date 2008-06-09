@@ -2,7 +2,7 @@
 require_once('init.php');
 
 // start tests
-$t = new lime_test(45, new lime_output_color());
+$t = new lime_test(46, new lime_output_color());
 
 
 $t->diag('create test objects');
