@@ -164,7 +164,8 @@ class sfRatingToolkit
    */
   public static function getObjectRatingField($object)
   {
-    return sfConfig::get('app_rating_' . get_class($object) . '_rating_field');
+  	$config = sfConfig::get('app_rating_' . get_class($object));
+  	return isset($config['rating_field']) ? $config['rating_field']:null;
   }
 
   /**
@@ -180,7 +181,8 @@ class sfRatingToolkit
       $object_name = get_class($object_name);
   	}
 
-    return sfConfig::get('app_rating_' . $object_name . '_reference_field');
+  	$config = sfConfig::get('app_rating_' . $object_name);
+    return isset($config['reference_field']) ? $config['reference_field']:null;
   }
   
   /**
